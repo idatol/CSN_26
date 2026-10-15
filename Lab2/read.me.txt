@@ -1,0 +1,29 @@
+The folder code contains all the code created for this report
+The files are as follows:
+- data_preperation: creates the out degree graphs from ud-treebank
+(In python because we initially planned to do the lab in python.
+While working on the lab we noticed that R was easier and better for the task. 
+Therefore we switched to R.)
+- summary_table: creates basic statistics of the out-degree sequences and saves them to a xls
+- plot_degree_distributions: plots the degree distributinos without any models
+- parameter_estimation: Fits the models to the degree distributions and saves their log likelyhood and parameters to seperate files
+- model_selection: Calculates which model is the best fit for the data according to AIC and BIC and saves the results to one file.
+
+The folder data contains all degree sequences created through the data preperation.
+It also has a subfolder named method_check that contains the degree sequences of the synthetic data used to check the methods.
+
+The folder figures contains all figures created.
+It is empty in the submission to save space, but can be filled by running plot_degree_distributions and parameter_estimation
+
+The folder results contains all the results from the experiments.
+
+minus_log_likelihoods: for all models, languages and synthetic data
+model_selection: AIC and BIC for all models
+model_selection: AIC and BIC for all models excluding Altmann (because this is a additional experiment)
+params: parameters of the models
+table1: basic statistics of the out-degree sequences 
+
+list contains all languages that should be processed.
+
+The ud-treebanks-v2.18 folder needs to be extracted form the extracted du files.
+Then all files can be run

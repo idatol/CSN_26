@@ -1,0 +1,11 @@
+language file
+sample_of_geometric_with_parameter_0.1 ./data/method_check/sample_of_geometric_with_parameter_0.1.txt
+sample_of_geometric_with_parameter_0.2 ./data/method_check/sample_of_geometric_with_parameter_0.2.txt
+sample_of_geometric_with_parameter_0.4 ./data/method_check/sample_of_geometric_with_parameter_0.4.txt
+sample_of_geometric_with_parameter_0.05 ./data/method_check/sample_of_geometric_with_parameter_0.05.txt
+sample_of_geometric_with_parameter_0.8 ./data/method_check/sample_of_geometric_with_parameter_0.8.txt
+sample_of_zeta_with_parameter_1.5 ./data/method_check/sample_of_zeta_with_parameter_1.5.txt
+sample_of_zeta_with_parameter_2.5 ./data/method_check/sample_of_zeta_with_parameter_2.5.txt
+sample_of_zeta_with_parameter_2 ./data/method_check/sample_of_zeta_with_parameter_2.txt
+sample_of_zeta_with_parameter_3.5 ./data/method_check/sample_of_zeta_with_parameter_3.5.txt
+sample_of_zeta_with_parameter_3 ./data/method_check/sample_of_zeta_with_parameter_3.txt
