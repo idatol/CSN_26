@@ -1,0 +1,14 @@
+language file
+Arabic ./data/Arabic_dependency_network.txt
+Basque ./data/Basque_dependency_network.txt
+Catalan ./data/Catalan_dependency_network.txt
+Chinese ./data/Chinese_dependency_network.txt
+Czech ./data/Czech_dependency_network.txt
+English ./data/English_dependency_network.txt
+Greek ./data/Greek_dependency_network.txt
+Hungarian ./data/Hungarian_dependency_network.txt
+Italian ./data/Italian_dependency_network.txt
+Turkish ./data/Turkish_dependency_network.txt
+German ./data/German_dependency_network.txt
+Finnish ./data/Finnish_dependency_network.txt
+
