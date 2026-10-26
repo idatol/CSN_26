@@ -1,0 +1,264 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[margin=2.5cm]{geometry}
+\usepackage{amsmath,amssymb}
+\usepackage{booktabs}
+\usepackage{graphicx}
+\usepackage[colorlinks=true,linkcolor=black,citecolor=black,urlcolor=blue]{hyperref}
+
+% Highlighted placeholder for things still to be filled in
+\newcommand{\todo}[1]{\textcolor{red}{[TODO: #1]}}
+\usepackage{xcolor}
+
+\title{Significance of the mean closeness centrality\\in syntactic dependency networks}
+\author{\todo{names}\\
+Complex and Social Networks (2026--2027), MIRI}
+\date{\today}
+
+\begin{document}
+\maketitle
+
+% ----------------------------------------------------------------
+\section{Introduction}
+
+We study the global syntactic dependency network of ten languages from the Universal
+Dependencies (UD) collection. Vertices are words and two words are linked if they formed a
+syntactic dependency at least once in the treebanks of the language. We use the undirected
+version of these networks.
+
+The metric of interest is the mean closeness centrality
+\begin{equation}
+  \mathcal{C} = \frac{1}{N}\sum_{i=1}^{N} \mathcal{C}_i,
+  \qquad
+  \mathcal{C}_i = \frac{1}{N-1}\sum_{\substack{j=1\\ j\neq i}}^{N}\frac{1}{d_{ij}},
+\end{equation}
+where $d_{ij}$ is the geodesic distance between $i$ and $j$ (the term is $0$ when $j$ is
+unreachable from $i$, so all $\mathcal{C}_i$ are finite and $0\le \mathcal{C}_i\le 1$).
+
+We ask whether $\mathcal{C}$ is \emph{significantly large}, i.e.\ whether
+$p(\mathcal{C}_{NH}\ge\mathcal{C})$ is small, under two null hypotheses: a binomial
+(Erd\H{o}s--R\'enyi) graph with the same $N$ and $E$, and a random graph with the same degree
+sequence as the real network (switching model). The $p$-values are estimated with a Monte Carlo
+procedure. \todo{one or two sentences announcing the main finding once results are in.}
+
+% ----------------------------------------------------------------
+\section{Results}
+
+\subsection{Basic properties of the networks}
+
+Table~\ref{tab:summary} summarises the networks after removing loops and repeated edges.
+$N$ is the number of vertices, $E$ the number of edges, $\langle k\rangle = 2E/N$ the mean
+degree and $\delta = 2E/(N(N-1))$ the network density.
+
+\begin{table}[h]
+  \centering
+  \begin{tabular}{lrrrr}
+    \toprule
+    Language & $N$ & $E$ & $\langle k\rangle$ & $\delta$ \\
+    \midrule
+    Arabic    & 27563  & 176829  & 12.83 & $4.66\cdot10^{-4}$ \\
+    Basque    & 24063  & 74902   & 6.23  & $2.59\cdot10^{-4}$ \\
+    Catalan   & 32298  & 254087  & 15.73 & $4.87\cdot10^{-4}$ \\
+    Chinese   & 24827  & 106915  & 8.61  & $3.47\cdot10^{-4}$ \\
+    Czech     & 215082 & 1925887 & 17.91 & $8.33\cdot10^{-5}$ \\
+    English   & 38022  & 406610  & 21.39 & $5.63\cdot10^{-4}$ \\
+    Greek     & 18695  & 68967   & 7.38  & $3.95\cdot10^{-4}$ \\
+    Hungarian & 13456  & 31406   & 4.67  & $3.47\cdot10^{-4}$ \\
+    Italian   & 52305  & 399894  & 15.29 & $2.92\cdot10^{-4}$ \\
+    Turkish   & 100790 & 384538  & 7.63  & $7.57\cdot10^{-5}$ \\
+    \bottomrule
+  \end{tabular}
+  \caption{Summary of the properties of the networks.}
+  \label{tab:summary}
+\end{table}
+
+\subsection{Significance of the mean closeness centrality}
+
+Table~\ref{tab:pvalues} shows the value of $\mathcal{C}$ in each real network and the estimated
+$p$-values under the two null hypotheses.
+
+\begin{table}[h]
+  \centering
+  \begin{tabular}{lrrrl}
+    \toprule
+    Language & $\mathcal{C}$ & $p$-value (binomial) & $p$-value (switching) & mode \\
+    \midrule
+    Arabic & 0.3174 & 0.00 & 1.00 & exact, $T=100$ \\
+    Basque & 0.2686 & 0.00 & 0.59 & exact, $T=100$ \\
+    Catalan & 0.3409 & 0.00 & 1.00 & exact, $T=100$ \\
+    Chinese & 0.2915 & 0.00 & 0.17 & exact, $T=100$ \\
+    Czech & 0.3057 & 0.00 & 1.00 & approx.\ ($M/N=1\%$, $T=50$) \\
+    English & 0.3364 & 0.00 & 1.00 & approx.\ ($M/N=10\%$, $T=100$) \\
+    Greek & 0.2867 & 0.00 & 1.00 & exact, $T=100$ \\
+    Hungarian & 0.2637 & 0.00 & 1.00 & exact, $T=100$ \\
+    Italian & 0.3271 & 0.00 & 1.00 & approx.\ ($M/N=10\%$, $T=100$) \\
+    Turkish & 0.2643 & 0.00 & 1.00 & approx.\ ($M/N=10\%$, $T=100$) \\
+    \bottomrule
+  \end{tabular}
+  \caption{Mean closeness centrality of each network (computed exactly) and estimated
+  $p$-values. $T$ is the number of random graphs per null model; ``approx.'' means that
+  the random graphs' $\mathcal{C}_{NH}$ was estimated from a fraction $M/N$ of their vertices.
+  A $p$-value of $0.00$ means that none of the $T$ random graphs reached the real value.}
+  \label{tab:pvalues}
+\end{table}
+
+% ----------------------------------------------------------------
+\section{Discussion}
+
+\todo{Summary of the results and interpretation. Points the assignment asks for:}
+\begin{itemize}
+  \item Under which null hypothesis is $\mathcal{C}$ significantly large and under which is it
+        not? Reason or speculate why (e.g.\ the role of hubs and of the degree sequence).
+  \item To what extent do languages resemble or differ in the value of $\mathcal{C}$ and in the
+        outcome of the significance test? Relate to $N$, $\langle k\rangle$ and $\delta$
+        (Table~\ref{tab:summary}).
+  \item Conclusions, and the limitations coming from approximate computation for the large
+        languages.
+\end{itemize}
+
+% ----------------------------------------------------------------
+\section{Methods}
+
+\subsection{Network construction}
+
+The networks are built from the UD treebanks v2.18 for the same ten languages as in Lab~2
+(script \texttt{code/build\_networks.R}). For each language, all its treebanks are pooled,
+except four that were excluded: UD\_Arabic-NYUAD and UD\_English-GUMReddit (no word forms),
+UD\_Italian-Old (historical language) and UD\_Chinese-GSDSimp (same text as Chinese-GSD).
+
+\begin{itemize}
+  \item Vertices are lowercased word forms. In the files, the two words of an edge
+        are separated by a tab, since a few forms contain spaces; the program checks the header
+        ($N$, $E$) against the file when loading it.
+  \item For every token whose head is not the root, the pair $\{$head, dependent$\}$ is an
+        edge. Edges involving punctuation (UPOS \texttt{PUNCT}) are ignored.
+  \item Direction is discarded: each pair is stored once in canonical order, so that
+        head$\to$dependent and dependent$\to$head are the same edge.
+  \item Loops are removed and repeated edges are counted once. Pairs are put in canonical
+        order with byte-wise (locale-independent) string comparison.
+\end{itemize}
+
+$N$ counts the words that appear in at least one edge. Each network is written to
+\texttt{data/language\_dependency\_network.txt} (first line: $N\ E$; then one edge per line).
+Note that these networks are unions of many sentence trees; they are not trees and contain
+cycles.
+
+\subsection{Computing the mean closeness centrality}
+
+The network is stored as an adjacency list in compressed sparse row form. $\mathcal{C}_i$ is
+obtained with a breadth-first search (BFS) from $i$, adding $1/d_{ij}$ for each vertex reached.
+Isolated vertices have $\mathcal{C}_i=0$ and need no search. The code is written in C++17 and
+compiled with \texttt{-O3}; BFS runs, and independent random replicates, are parallelised with
+OpenMP (8 threads).
+
+\subsection{Null models and Monte Carlo estimation}
+
+The $p$-value is estimated as $p(\mathcal{C}_{NH}\ge\mathcal{C})\approx f/T$, where $T$ is the
+number of random graphs generated and $f$ the number of them with
+$\mathcal{C}_{NH}\ge\mathcal{C}$. Comparisons use a tolerance of $10^{-12}$ to avoid
+floating-point order effects. We use $T=100$ random graphs per null model, except for Czech
+($T=50$); the values are listed in Table~\ref{tab:pvalues}.
+
+\paragraph{Binomial graph.} A graph with $N$ vertices and $E$ edges: $E$ distinct pairs of
+distinct vertices are drawn uniformly, rejecting loops and repeated pairs.
+
+\paragraph{Switching model.} Starting from the real edge list, we perform $QE$ attempts. Each
+attempt picks two edges $u\sim v$ and $s\sim t$ uniformly. The second edge is flipped
+(exchange $s$ and $t$) with probability $1/2$ and the edges are rewired to $u\sim t$ and
+$s\sim v$; the flip makes the two possible rewirings equally likely, since the stored order of
+the endpoints of an edge is arbitrary. Attempts that are not valid are skipped, but still count
+towards the $QE$ attempts. Every replicate starts again from the original network.
+
+\emph{Which switchings preserve the degree sequence?} Both rewirings of two edges
+$u\sim v$, $s\sim t$, namely $\{u\sim t, s\sim v\}$ and $\{u\sim s, v\sim t\}$, preserve the
+degree sequence, because each vertex loses and gains exactly one edge.
+
+\emph{Which of them produce forbidden edges?} A rewiring creates a loop if the two new
+endpoints coincide, e.g.\ $u=t$ (or $s=v$) for $\{u\sim t, s\sim v\}$. It creates a multiedge
+if a new edge already exists in the graph. Edges that share a vertex (e.g.\ $u=s$) are the
+typical case: the rewiring then either reproduces an existing edge or does nothing useful, and
+is rejected by these two checks. Choosing the same edge twice is also rejected.
+
+\paragraph{Choice of $Q$.} By the coupon collector argument, about $\ln E$ rounds are needed
+for every edge to have been touched at least once, so we use $Q=\max(10,\lceil\ln E\rceil)$
+(this gives $Q=11$ for Hungarian, $12$ for Basque, Chinese and Greek, $13$ for Arabic, Catalan,
+English, Italian and Turkish, and $15$ for Czech). \todo{Report the fraction of attempts that
+were accepted.}
+
+\subsection{Exact computation with early stopping}
+
+To decide whether $\mathcal{C}_{NH}\ge\mathcal{C}$ it is not always necessary to compute
+$\mathcal{C}_{NH}$ fully. Vertices are visited in a uniformly random order, and after $M$
+vertices bounds on $\mathcal{C}_{NH}$ are available (we write $S_M$ for the sum of the computed
+$\mathcal{C}_i$):
+\begin{align}
+  \mathcal{C}_{NH}^{\min} &= \frac{S_M}{N}
+  &&\text{(unvisited vertices contribute 0)},\\
+  \mathcal{C}_{NH}^{\max} &= \frac{1}{N}\Big(S_M+\sum_{i\ \text{unvisited}} u_i\Big),
+  &&u_i=\frac{k_i + (N-1-k_i)/2}{N-1}.
+\end{align}
+The upper bound is tighter than the generic $\mathcal{C}_i\le1$: a vertex of degree $k_i$ has at
+most $k_i$ vertices at distance 1 and every other vertex is at distance at least 2 (and
+unreachable vertices count as 0). Isolated vertices have $u_i=0$ and are never visited. The
+search stops with ``$\ge$'' as soon as $\mathcal{C}_{NH}^{\min}\ge\mathcal{C}$ and with ``$<$''
+as soon as $\mathcal{C}_{NH}^{\max}<\mathcal{C}$. This gives exactly the same answer as the full
+computation. It saves much work when $\mathcal{C}_{NH}$ is clearly below $\mathcal{C}$, but little
+when it is above (nearly all vertices must be visited before the lower bound reaches
+$\mathcal{C}$). The shortcut for degree-one vertices ($d_{ij}=d_{kj}+1$) was not used: it
+requires the BFS of the neighbour $k$ anyway.
+
+\subsection{Approximate computation}
+
+Exact computation costs about $N\cdot E$ operations per graph, which is not feasible for the
+largest networks (e.g.\ Czech: $N=215082$, $E=1.9\cdot10^{6}$). For those we estimate
+\begin{equation}
+  \mathcal{C}\approx\frac{1}{M}\sum_{i=1}^{M}\mathcal{C}_i
+\end{equation}
+over $M$ vertices chosen uniformly at random for each random graph (no early stopping). The
+mean closeness of the \emph{real} network is always computed exactly (one BFS from every vertex,
+parallelised over 8 threads), so the only sampling error comes from the random
+graphs. The cost is proportional to $M/N$.
+
+Languages with $N\cdot E<10^{10}$ (Arabic, Basque, Catalan, Chinese, Greek, Hungarian) were
+processed exactly (with early stopping). English, Italian and Turkish used $M/N=10\%$ and
+Czech $M/N=1\%$. To assess the effect of the approximation, Hungarian was run exactly and with
+decreasing $M/N$ (Table~\ref{tab:validation}). The $p$-value for the binomial model is $0$ in
+all cases, but the switching $p$-value decreases as $M/N$ decreases, i.e.\ the approximation is
+biased towards smaller $p$-values.
+
+\begin{table}[h]
+  \centering
+  \begin{tabular}{lrrrrrr}
+    \toprule
+    $M/N$ & 1 (exact) & 0.5 & 0.2 & 0.1 & 0.05 & 0.01 \\
+    \midrule
+    $p$-value (switching) & 1.00 & 1.00 & 0.99 & 0.96 & 0.86 & 0.81 \\
+    \bottomrule
+  \end{tabular}
+  \caption{Hungarian, $T=100$: switching $p$-value as a function of the fraction of vertices
+  used to estimate $\mathcal{C}_{NH}$.}
+  \label{tab:validation}
+\end{table}
+
+\subsection{Reproducibility}
+
+Each replicate uses its own pseudo-random stream seeded from the global seed and the replicate
+index, so results do not depend on the number of threads. The seed is $1$ for all runs.
+$T$, $Q$ and $M/N$ per language are given above and in Table~\ref{tab:pvalues}. Everything is
+reproduced from the repository root with
+\begin{verbatim}
+Rscript code/build_networks.R ../Lab2/ud-treebanks-v2.18 data   # networks
+make                                                            # compile
+./run_all.sh                                                    # Table 2
+./validate_approx.sh Hungarian 100                              # Table 3
+\end{verbatim}
+\todo{Fraction of accepted switching attempts, if measured.}
+
+\begin{thebibliography}{9}
+\bibitem{newman2009} M.~Newman. \emph{Networks: an introduction}. Oxford University Press, 2009.
+\bibitem{ferrer2004} R.~Ferrer-i-Cancho, R.~V.~Sol\'e, R.~K\"ohler. Patterns in syntactic
+  dependency networks. \emph{Physical Review E}, 69(5):051915, 2004.
+\end{thebibliography}
+
+\end{document}
