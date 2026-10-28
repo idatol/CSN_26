@@ -1,0 +1,69 @@
+\documentclass[12pt,a4paper]{article}
+
+% --------------------------------------------------
+% Packages
+% --------------------------------------------------
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage{geometry}
+\usepackage{array}
+\usepackage{booktabs}
+\usepackage{setspace}
+
+% --------------------------------------------------
+% Page setup
+% --------------------------------------------------
+\geometry{
+    a4paper,
+    margin=2.5cm
+}
+
+\onehalfspacing
+
+% --------------------------------------------------
+% Document
+% --------------------------------------------------
+\begin{document}
+
+\section{Use of Generative AI and Other Tools}
+
+\subsection{Declaration}
+
+\begin{center}
+\begin{tabular}{lll}
+    \toprule
+    Task & Tool & Where? \\
+    \midrule
+    Rephrasing and proofreading
+        & ChatGPT & Throughout \\
+    Code checking
+        & Claude & Throughout \\
+    Code translation and familiarization with RStudio
+        & Claude & In some functions \\
+    Plot improvements
+        & Claude & Throughout \\
+    Code storage, version control and code sharing
+        & GitHub & Throughout \\
+    \bottomrule
+\end{tabular}
+\end{center}
+
+\subsection{Reflection}
+
+ChatGPT was used for rephrasing sentences that sounded strange by generating
+multiple ideas and selecting parts of those suggestions. This worked well,
+although the complete generated sentences could almost never be used as they
+were. Using AI for grammar checks was helpful for removing most spelling
+mistakes, but a human spell check still had to be carried out.
+
+Claude was used for checking the written code for errors and bugs. For the errors and bugs that was found, fixes were suggest with properly explained reasoning. 
+
+Claude was used to improve the visualization of the data in the plots. This was manually checked and just reduced the time needed for the visualisation improvements.
+
+
+GitHub was used to store, share, and version the code. This allowed us to work on the same code without having to send it through other messengers. It would have also allowed us to restore an old version in case needed to do so.
+
+
+
+\end{document}
