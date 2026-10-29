@@ -1,0 +1,6 @@
+closeness
+*.aux
+*.log
+*.out
+.DS_Store
+data/

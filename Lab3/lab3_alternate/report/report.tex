@@ -1,0 +1,308 @@
+\documentclass[12pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[english]{babel}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{graphicx}
+\usepackage{float}
+\usepackage{subcaption}
+\usepackage[verbose]{placeins}
+\usepackage{multirow}
+\usepackage{booktabs}
+\usepackage{setspace}
+\usepackage{xcolor}
+\usepackage[toc]{appendix}
+\usepackage[margin=3cm]{geometry}
+\usepackage[hidelinks]{hyperref}
+\DeclareUnicodeCharacter{2212}{-}
+
+\newcommand{\metric}{\mathcal{C}}
+\newcommand{\metricname}{mean closeness centrality}
+\newcommand{\pval}{p(x_{NH} \geq x)}
+\newcommand{\todo}[1]{\textcolor{red}{[TODO: #1]}}
+\input{figures/numbers.tex} % numbers computed by scripts/make_figures.py
+
+\begin{document}
+
+\begin{titlepage}
+   \centering
+   \vspace*{5cm}
+
+   {\LARGE \textbf{Complex and Social Networks}} \\[1cm]
+
+   {\large \textbf{Lab report: Significance of network metrics}} \\
+
+   {\large \textbf{Autumn 2026}} \\[0.5cm]
+   {\large CSN -- MIRI} \\[3cm]
+
+   {\large \textbf{
+   Ida Kallevik Tollaksen (ida.kallevik.tollaksen@estudiantat.upc.edu) \\
+   Berdina van Eeden (berdina.van.eeden@estudiantat.upc.edu)}} \\[3cm]
+
+   UPC  \\[2cm]
+
+\end{titlepage}
+\begin{spacing}{1.25}
+
+\newpage
+\tableofcontents
+\newpage
+
+\section{Introduction}
+
+In this lab we studied global syntactic dependency networks, in which vertices are words and two words are linked if they have formed a syntactic dependency at least once in a treebank. We worked with the undirected versions of these networks, built for the group of languages from the Universal Dependencies collection used in the previous lab.
+
+The aim was to determine whether the \metricname{} of these syntactic dependency networks, $\metric$, is significantly large with respect to two null hypotheses: a binomial (Erdős–Rényi) graph with the same number of vertices and edges, and a randomized graph with the same degree sequence obtained through the switching model. The mean closeness centrality is defined as
+\begin{equation}
+    \metric = \frac{1}{N}\sum_{i=1}^{N} \metric_i, \qquad
+    \metric_i = \frac{1}{N-1}\sum_{j=1,\, j \neq i}^{N} \frac{1}{d_{ij}},
+\end{equation}
+where $N$ is the number of vertices and $d_{ij}$ is the geodesic distance between vertices $i$ and $j$, with $1/d_{ij} = 0$ when $j$ cannot be reached from $i$. A high value of $\metric$ means that on average, words are only a few dependency links away from each other.
+
+
+\section{Results}
+
+\subsection{Summary of the networks}
+Table~\ref{tab:summary} summarises the basic properties of each network after removing loops. The networks range from about 13\,000 vertices (Hungarian) to about 215\,000 (Czech). All of them are very sparse, with densities below $10^{-3}$. English has the highest mean degree ($\langle k \rangle \approx 21$) and Hungarian the lowest ($\langle k \rangle \approx 5$).
+
+\begin{table}[H]
+    \centering
+    \begin{tabular}{lrrrr}
+        \toprule
+        Language & $N$ & $E$ & $\langle k \rangle$ & $\delta$ ($\times 10^{-4}$) \\
+        \midrule
+        Arabic    & 27\,563 & 176\,829 & 12.83 & 4.66 \\
+        Basque    & 24\,063 & 74\,902 & 6.23 & 2.59 \\
+        Catalan   & 32\,298 & 254\,087 & 15.73 & 4.87 \\
+        Chinese   & 24\,827 & 106\,915 & 8.61 & 3.47 \\
+        Czech     & 215\,082 & 1\,925\,887 & 17.91 & 0.83 \\
+        English   & 38\,022 & 406\,610 & 21.39 & 5.63 \\
+        Greek     & 18\,695 & 68\,967 & 7.38 & 3.95 \\
+        Hungarian & 13\,456 & 31\,406 & 4.67 & 3.47 \\
+        Italian   & 52\,305 & 399\,894 & 15.29 & 2.92 \\
+        Turkish   & 100\,790 & 384\,538 & 7.63 & 0.76 \\
+        \bottomrule
+    \end{tabular}
+    \caption{Summary of the properties of the networks. $N$ is the number of vertices, $E$ the number of edges, $\langle k\rangle = 2E/N$ the mean degree and $\delta = 2E/(N(N-1))$ the density of edges.}
+    \label{tab:summary}
+\end{table}
+
+\subsection{Significance of $\metric$}
+Table~\ref{tab:pvalues} shows the value of $\metric$ in each real network together with the Monte Carlo estimates of the p-value under both null hypotheses.
+
+The p-value under the binomial model is below $\alpha = 0.05$ for all ten languages: none of the random binomial graphs reached the real value of $\metric$. Under the switching model no p-value is below $\alpha$. It is $1.00$ for eight languages, and the smallest values are $0.17$ (Chinese) and $0.59$ (Basque). The values of $\metric$ lie between $0.26$ (Hungarian) and $0.34$ (Catalan). For Czech the estimates use only $1\%$ of the vertices, so its switching p-value is expected to be biased downwards (Table~\ref{tab:validation}).
+
+\begin{table}[H]
+    \centering
+    \begin{tabular}{lrrrr}
+        \toprule
+        Language & $\metric$ & p-value (binomial) & p-value (switching) & $M/N$ \\
+        \midrule
+        Arabic    & 0.3174 & $<0.01$ & 1.00 & 1 \\
+        Basque    & 0.2686 & $<0.01$ & 0.59 & 1 \\
+        Catalan   & 0.3409 & $<0.01$ & 1.00 & 1 \\
+        Chinese   & 0.2915 & $<0.01$ & 0.17 & 1 \\
+        Czech     & 0.3057 & $<0.02$ & 1.00 & 0.01 \\
+        English   & 0.3364 & $<0.01$ & 1.00 & 0.1 \\
+        Greek     & 0.2867 & $<0.01$ & 1.00 & 1 \\
+        Hungarian & 0.2637 & $<0.01$ & 1.00 & 1 \\
+        Italian   & 0.3271 & $<0.01$ & 1.00 & 0.1 \\
+        Turkish   & 0.2643 & $<0.01$ & 1.00 & 0.1 \\
+        \bottomrule
+    \end{tabular}
+    \caption{Value of $\metric$ in the real networks and estimated p-values, $\pval$, under the binomial (Erdős–Rényi) and switching null models. $\metric$ is always exact. The last column is the fraction $M/N$ of vertices used to estimate $\metric_{NH}$ in the random graphs ($1$ means exact). $T=100$ random graphs per model ($T=50$ for Czech), $Q=\max(10,\lceil\ln E\rceil)$. A value $<1/T$ means that none of the $T$ random graphs reached the real $\metric$.}
+    \label{tab:pvalues}
+\end{table}
+
+
+\subsection{Structure of the real networks}
+Table~\ref{tab:properties} adds four properties of the real networks that help interpret the results: the degree of the largest hub $k_{\max}$, the share of all vertices it is linked to ($k_{\max}/N$), the percentage of vertices with degree $1$, and the degree assortativity $r$ (the correlation between the degrees at the two ends of an edge; $r<0$ means that high-degree vertices tend to be linked to low-degree ones). All networks are disassortative ($r$ between $-0.06$ and $-0.15$), the largest hub is linked to between about $7\%$ (Turkish) and $24\%$ (Catalan) of all vertices, and between about 17\% (Greek) and 33\% (Chinese) of the vertices have a single link.
+
+\begin{table}[H]
+    \centering
+    \input{figures/tab_properties.tex}
+    \caption{Structural properties of the real networks: largest degree $k_{\max}$, the share of all vertices it is linked to ($k_{\max}/N$), percentage of vertices of degree $1$, and degree assortativity $r$.}
+    \label{tab:properties}
+\end{table}
+
+\subsection{Mean closeness and mean degree}
+Figure~\ref{fig:Cvsk} plots $\metric$ against the mean degree for all \nLangsDone{} languages. $\metric$ increases with $\langle k\rangle$ (Spearman rank correlation $\rho=\rhoK$) and is only weakly related to the size of the network (correlation with $N$: $\rho=\rhoN$). The relative size of the largest hub, $k_{\max}/N$, is also correlated with $\metric$ ($\rho=\rhoHub$). Czech has a higher mean degree than Italian and Catalan but a lower $\metric$.
+
+\begin{figure}[!htb]
+    \centering
+    \includegraphics[width=0.85\textwidth]{figures/C_vs_k.pdf}
+    \caption{Mean closeness centrality against mean degree. The area of a marker is proportional to $N$. Blue markers: languages whose switching p-value is below 1; grey: switching p-value equal to 1 (Table~\ref{tab:pvalues}).}
+    \label{fig:Cvsk}
+\end{figure}
+
+\subsection{Distance of $\metric$ to the null models}
+The p-values of Table~\ref{tab:pvalues} only say whether $\metric_{NH}\ge\metric$ occurred. To see how large the differences are, we computed the mean closeness exactly for repeated random graphs of both null models for Hungarian, Basque and Chinese (Figure~\ref{fig:nulls} and Table~\ref{tab:nulls}). We write $\metric_{\mathrm{bin}}$ and $\metric_{\mathrm{sw}}$ for the value of $\metric_{NH}$ in a binomial and in a switching graph, respectively. For each model we report the mean ($\overline{\metric}_{\mathrm{bin}}$, $\overline{\metric}_{\mathrm{sw}}$) and the standard deviation ($s_{\mathrm{bin}}$, $s_{\mathrm{sw}}$) over its own random graphs. For the switching model these are computed from all graphs with $Q\ge 1$, because $\metric_{\mathrm{sw}}$ does not depend on $Q$ in this range (Figure~\ref{fig:Qstab}). The binomial graphs have a much smaller $\metric_{\mathrm{bin}}$ than the real networks. Under the switching model, the real value differs from the mean by at most about $1\%$ of $\metric$ (Hungarian, where it lies $3.7$ standard deviations below the mean); for Basque and Chinese it is within one standard deviation above the mean.
+
+\begin{figure}[!htb]
+    \centering
+    \includegraphics[width=\textwidth]{figures/null_comparison.pdf}
+    \caption{(a) Real $\metric$ and the means $\overline{\metric}_{\mathrm{bin}}$ and $\overline{\metric}_{\mathrm{sw}}$ of the binomial and switching null models. (b) Difference between the real $\metric$ and the switching mean, in units of $s_{\mathrm{sw}}$ (negative: real value below the null mean).}
+    \label{fig:nulls}
+\end{figure}
+
+\begin{table}[H]
+    \centering
+    \input{figures/tab_null.tex}
+    \caption{Exact $\metric_{NH}$ under the null models: mean $\overline{\metric}$ and standard deviation $s$ over the random graphs of each model (the two models have their own values). The difference and $z=(\metric-\overline{\metric}_{\mathrm{sw}})/s_{\mathrm{sw}}$ refer to the switching model. The binomial means come from $10$ (Hungarian) or $6$ (Basque, Chinese) random graphs; the switching values pool the graphs with $Q\ge 1$ (five values of $Q$, $10$ or $6$ graphs each).}
+    \label{tab:nulls}
+\end{table}
+
+\subsection{Choice of $Q$ in practice}
+Figure~\ref{fig:Qstab} shows $\metric_{\mathrm{sw}}$ for $Q$ from $0.5$ up to twice the value used in the experiments. Within the sampling noise, $\metric_{\mathrm{sw}}$ does not change with $Q$ in this range, i.e.\ the random graphs are already well mixed at $Q=0.5$ and the value used ($Q=\max(10,\lceil\ln E\rceil)$, dotted line) is on the safe side.
+
+\begin{figure}[!htb]
+    \centering
+    \includegraphics[width=\textwidth]{figures/Q_stability.pdf}
+    \caption{$\metric_{\mathrm{sw}}$ (mean $\pm$ one standard deviation over the random graphs) as a function of $Q$. Dashed: real $\metric$; dotted: $Q$ used.}
+    \label{fig:Qstab}
+\end{figure}
+
+\subsection{Degree correlations and clustering in real and switched networks}
+Because the switching model only preserves the degrees, we compared the degree assortativity $r$ and the mean local clustering coefficient $C_{WS}$ of the real networks with graphs from the switching model (Table~\ref{tab:structure}; 5 switched graphs for $r$, 3 for $C_{WS}$). The degree assortativity of the switched graphs is very close to that of the real networks, the biggest difference is in Greek ($-0.144$ against $-0.124$). The clustering coefficient differs in both directions: it is higher in the switched graphs in Hungarian and Greek, similar in Basque and higher in the real network in Chinese.
+
+\begin{table}[H]
+    \centering
+    \input{figures/tab_structure.tex}
+    \caption{Mean local clustering coefficient $C_{WS}$ and degree assortativity $r$ in the real networks and in graphs from the switching model.}
+    \label{tab:structure}
+\end{table}
+
+
+\section{Discussion}
+
+\subsection{Significance under each null hypothesis}
+\label{sec:sig}
+Under the binomial model $\metric$ is significantly large in all ten languages ($p<1/T$, Table~\ref{tab:pvalues}). Under the switching model it is not significantly large in any language. We can therefore reject the binomial null hypothesis but not the switching null hypothesis. This means the syntactic dependency networks are much more compact than random graphs with the same $N$ and $E$, but not more compact than randomized graphs with the same degree sequence.
+
+The difference between the two models is the degree sequence. A binomial graph has a Poisson degree distribution concentrated around $\langle k\rangle$, so it does not have hubs. The real networks have hubs connected to between 7\% and 24\% of all vertices (Table~\ref{tab:properties}). These are most likely function words such as articles, prepositions and conjunctions, that take part in dependencies with a very large number of other words. Through a hub, a large amount of the network is at most two steps away from any of its neighbours, which keeps geodesic distances short and $\metric$ high. Many vertices of degree $1$, typically rare words, are attached to these hubs and because of this they also have a high closeness despite having a low degree. The binomial model removes this heterogeneity and gives a much smaller $\metric_{\mathrm{bin}}$ (Figure~\ref{fig:nulls}). The isolated vertices of the binomial graphs (which have $\metric_i=0$) also lower $\metric_{\mathrm{bin}}$, but even for Hungarian, the network with the lowest mean degree $\langle k\rangle$ (Table~\ref{tab:summary}), only about $e^{-\langle k\rangle}\approx 1\%$ of the vertices are expected to be isolated, so it does not explain a difference of this size.
+
+The switching model keeps the degree of every vertex and the hubs, and gives values of $\metric_{\mathrm{sw}}$ very close to the real one $\metric$. In Hungarian the real value is $3.7$ standard deviations \emph{below} the null mean, and in Basque and Chinese it is within one standard deviation of it (Table~\ref{tab:nulls}). This suggests that the high mean closeness of syntactic dependency networks is mostly a consequence of their heavy-tailed degree distribution, and that the way words are combined actually adds very little or nothing to it. The degree correlations support this. The real networks are disassortative, but the switched graphs have almost the same assortativity (Table~\ref{tab:structure}). The disassortativity is therefore also explained by the degree sequence, since in a simple graph a few large hubs must be connected mostly to low-degree vertices. If anything, the real networks are a bit less compact than expected. A switching p-value of $1.00$ means that none of the $T$ switched graphs had a $\metric_{NH}$ as low as the real one, so in the eight languages with $p=1.00$ the real $\metric$ is actually significantly \emph{small} under the switching model ($p(x_{NH} \leq x) < 1/T$). We only measured how far below the mean it is for Hungarian, but the p-values show that it is the same direction for most of the languages. This may reflect constraints of syntax. For example, a word can only depend on words of compatible categories, so some links that would shorten paths in a random graph do not exist in the real network. This is speculative though, and the effect is small (about $1\%$ of $\metric$).
+
+These conclusions are not affected by the approximations. Using only $M$ vertices adds noise to $\metric_{NH}$. Because the real $\metric$ is below the switching mean, this noise can only make some switched graphs fall below $\metric$, so the switching p-value goes down (Table~\ref{tab:validation}). This would not be true in general, if $\metric$ was above the null mean the noise would push the p-value up instead. Here it means that a p-value of $1.00$ under the approximation is on the safe side, and all approximated languages have a switching p-value of $1.00$. The exact languages include the two languages with p-values below $1$ (Basque and Chinese). For the binomial model, the p-value of Hungarian was $0$ for every $M/N$ we tried, including $1\%$.
+
+\subsection{Comparison across languages}
+The languages are all quite similar. The values of $\metric$ are in a small range, from $0.26$ (Hungarian) to $0.34$ (Catalan), even though the networks are very different sizes. The outcome of both tests is also the same in every language. The differences that are there mostly follow the degree sequence: $\metric$ grows with $\langle k\rangle$ ($\rho=\rhoK$) and with the relative size of the largest hub ($\rho=\rhoHub$), but is only weakly related to $N$ ($\rho=\rhoN$).
+
+This does not explain everything on its own though. Czech has a higher mean degree than Italian and Catalan but a lower $\metric$. Its largest hub covers about 17\% of the vertices, compared to 21\% for Italian and 24\% for Catalan (Table~\ref{tab:properties}), so the hubs reach a smaller part of the network. Hungarian goes the other way: its largest hub is relatively big (about 18\%), but it has the lowest $\langle k\rangle$ and also the lowest $\metric$.
+
+One possible explanation for this difference is how words are built in each language. The three languages with the lowest $\metric$ are Hungarian, Turkish and Basque, which all build words by adding many suffixes to a stem. Since we used word forms and not lemmas, one word in these languages turns into many different vertices (one for each combination of suffixes), and its dependencies are spread out over all of them. This gives a lower mean degree and smaller hubs compared to the size of the network. The languages with the highest $\metric$ (Catalan, English and Italian) change the form of their words much less, and have a lot of smaller words like articles and prepositions, which become huge hubs. Chinese does not really change the form of its words at all, but still only has a middle value of $\metric$, which might have to do with word segmentation or with the lack of articles. We have not tested any of this, so we cannot be fully certain.
+
+When it comes to the tests, the differences are small. Chinese ($0.17$) and Basque ($0.59$) are the only languages with a switching p-value below $1$, but none of them come close to $\alpha$. In the other eight languages the real $\metric$ is below all the switched graphs. Since the switching model gets very close to $\metric$ in every language, the differences between the languages probably come from their degree distributions and not from how the words are wired.
+
+We should also keep in mind that the treebanks differ in size, genre and annotation, so the networks are not equally good samples of each language. Part of the reason Czech is so large is simply that there is much more Czech text in Universal Dependencies. With only ten languages, the correlations above cannot be considered certain.
+
+\subsection{Conclusions}
+In all ten languages, $\metric$ is significantly large under the binomial model. Under the switching model it is not significantly large. That is, words are much closer to each other than they would be if links were placed at random. However, this is what we would expect from the degree sequence alone. The hubs, most likely function words, are what keep the distances short. Apart from the degrees, the way words are actually connected does not make the networks more compact, and in most of the languages it even makes them a little less compact.
+
+The languages are quite similar both in the value of $\metric$ and in the outcome of the tests. The differences between them mostly follow the mean degree and the relative size of the largest hub. This may in turn be related to how much inflection the language has. The approximations we used for the largest networks do not change these conclusions. Since the real $\metric$ is below the switching mean, they can only make the switching p-values smaller, and all the approximated languages still have a p-value of $1$.
+
+
+\section{Methods}
+
+\subsection{Data preparation}
+For each language, all treebanks of that language in Universal Dependencies v2.18 (train, dev and test files) were merged into a single network, except four treebanks that were excluded: UD\_Arabic-NYUAD and UD\_English-GUMReddit (they contain no word forms), UD\_Italian-Old (a historical stage of the language) and UD\_Chinese-GSDSimp (the same text as UD\_Chinese-GSD, which it would duplicate).
+
+Every token whose head is not the root produces an edge between the word and its head, unless the token or its head is punctuation (UPOS \texttt{PUNCT}), which is ignored. We used word forms converted to lowercase, and skipped multiword tokens and empty nodes. The network is undirected and unweighted, so a dependency that occurs several times, or in both directions, gives a single edge. Loops (a word that is the head of a token with the same form) were removed. Since loops are removed before the vertices are counted, $N$ is the number of words that take part in at least one edge, and the networks have no isolated vertices.
+
+Each file \texttt{data/language\_dependency\_network.txt} starts with a header line containing $N$ and $E$, followed by one edge per line, with the two words separated by a tab. A tab is used instead of a space because a few word forms contain spaces. When a file is read, the program checks the header: the number of edge lines must equal $E$, and the number of distinct words must not exceed $N$. The networks were built with an R script (\texttt{code/build\_networks.R}, using the \texttt{data.table} package).
+
+\subsection{Null models}
+
+\subsubsection{Binomial (Erdős–Rényi) model}
+Graphs with the same $N$ and $E$ as the real network were generated by repeatedly drawing a pair of vertices uniformly at random and adding the edge between them, unless it was a loop or already present, until $E$ edges were obtained. This gives a graph chosen uniformly among all simple graphs with $N$ vertices and $E$ edges. Unlike the real networks, these graphs may contain isolated vertices.
+
+\subsubsection{Switching model}
+Starting from the real network, $QE$ switchings are attempted. Each attempt chooses two edges uniformly at random and tries to exchange their endpoints. Attempts that are rejected are also counted towards the $QE$ trials. Every random graph is generated starting again from the real network, not from the previous random graph.
+
+\paragraph{Choice of $Q$.}
+Every attempt chooses two edges, so by the coupon collector's problem about $\tfrac{1}{2}E\ln E$ attempts are needed before each of the $E$ edges has been chosen at least once, i.e.\ $Q \approx \tfrac{1}{2}\ln E$. Many attempts are rejected and an edge that has been chosen once is not yet well mixed, so we use at least twice this value, $Q = \max(10,\lceil \ln E\rceil)$, which also respects the recommended minimum of $10$. This gives $Q$ between $11$ (Hungarian) and $15$ (Czech).
+
+\paragraph{Switchings that preserve the degree sequence.}
+Given two edges $u \sim v$ and $s \sim t$, the switchings that preserve the degree sequence are those that pair the four endpoints differently: $u \sim t,\ s \sim v$ or $u \sim s,\ v \sim t$. Each vertex keeps the same number of edge endpoints, so all degrees are preserved. Any other rewiring, for example keeping $u \sim v$ and adding $u \sim t$, changes the degrees and is not valid. We implement the first re-pairing and, with probability $1/2$, swap $s$ and $t$ beforehand, which covers the second. The swap is needed because the order in which the two endpoints of an edge are stored is arbitrary; without it only one of the two re-pairings would ever be tried. (After the swap the conditions below hold with $s$ and $t$ exchanged.)
+
+\paragraph{Switchings that preserve the degree sequence but create forbidden edges.}
+Coincident vertices make some of these switchings forbidden or redundant:
+\begin{itemize}
+    \item If $u = t$ or $v = s$, the switching creates a loop ($u \sim u$ or $v \sim v$).
+    \item If the same edge is chosen twice ($u = s$ and $v = t$), both new edges are $u \sim v$, which is a multiedge.
+    \item If only $u = s$ (or only $v = t$), the first re-pairing gives back the original edges, so the switching changes nothing (the second re-pairing would create a loop).
+    \item If all four vertices are distinct, the switching creates a multiedge when $u \sim t$ or $s \sim v$ already exists in the graph.
+\end{itemize}
+In the implementation, all of these cases are rejected by two checks, $u \neq t$ and $s \neq v$, and neither new edge may already be in the graph (choosing the same edge twice is also rejected directly).
+
+\subsection{Monte Carlo estimation of the p-value}
+The p-value is estimated as
+\begin{equation}
+    \pval \approx \frac{f(x_{NH} \geq x)}{T},
+\end{equation}
+where $T$ is the number of random graphs generated and $f(x_{NH} \geq x)$ the number of them in which $x_{NH} \geq x$. The estimate has resolution $1/T$: an estimated p-value of $0$ only means that none of the $T$ random graphs reached the real value, i.e.\ $p < 1/T$. Comparisons use a tolerance of $10^{-12}$ so that rounding in the order of the summation does not change the outcome. A p-value is considered small if it is below the significance level $\alpha = 0.05$.
+
+\subsection{Optimizations keeping results exact}
+To decide whether $\metric_{NH} \geq \metric$, the value of $\metric_{NH}$ does not always need to be computed fully. After computing $\metric_i$ exactly for the first $M$ vertices, and since $0 \leq \metric_i \leq 1$,
+\begin{equation}
+    \metric^{\min}_{NH} = \frac{1}{N}\sum_{i=1}^{M} \metric_i \;\leq\; \metric_{NH} \;\leq\; \frac{1}{N}\sum_{i=1}^{M} \metric_i + 1 - \frac{M}{N} = \metric^{\max}_{NH}.
+\end{equation}
+The computation stops as soon as $\metric^{\min}_{NH} \geq \metric$ (then $\metric_{NH} \geq \metric$) or $\metric^{\max}_{NH} < \metric$ (then $\metric_{NH} < \metric$). This gives exactly the same answer as the full computation.
+
+We use a tighter upper bound. A vertex of degree $k_i$ has at most $k_i$ vertices at distance $1$, and every other vertex is at distance at least $2$ (or unreachable, contributing $0$), so
+\begin{equation}
+    \metric_i \leq u_i = \frac{k_i + (N-1-k_i)/2}{N-1},
+\end{equation}
+which is far below $1$ for vertices of small degree. In $\metric^{\max}_{NH}$ the term $1-M/N$ is then replaced by $\frac{1}{N}\sum u_i$ over the vertices not yet visited. Vertices of degree $0$ have $\metric_i = 0$ and are never visited (this matters for the binomial graphs, which contain isolated vertices). The vertices are visited in a uniformly random order, so that the vertices examined first are a representative sample. The bounds help most when $\metric_{NH}$ is clearly below $\metric$; when it is above, nearly all vertices must be visited before $\metric^{\min}_{NH}$ reaches $\metric$. We did not use the shortcut for vertices with $k_i = 1$ ($d_{ij} = d_{kj}+1$ for the neighbour $k$). With it, the distances from a vertex of degree $1$ follow from the breadth-first search of its neighbour, so its own search could be skipped. Between 17\% and 33\% of the vertices have degree $1$ (Table~\ref{tab:properties}), so this could reduce the running time quite a lot.
+
+\subsection{Optimizations yielding approximate results}
+The exact computation takes about $N\cdot E$ operations per graph, which is not feasible for the largest networks. For these we estimate
+\begin{equation}
+    \metric_{NH} \approx \frac{1}{M}\sum_{i=1}^{M} \metric_i
+\end{equation}
+over $M$ vertices chosen uniformly at random (a random permutation of the vertices), separately for each random graph, and with no early stopping. The $\metric$ of the real network is always computed exactly (one breadth-first search from every vertex, in parallel), so the only sampling error comes from the random graphs. The ratio $M/N$ used for each language is given in Table~\ref{tab:params}: six of the smaller networks were processed exactly ($M/N=1$), three networks with $M/N = 10\%$, and Czech with $M/N = 1\%$.
+
+To assess the effect of the approximation, we ran Hungarian exactly and with decreasing $M/N$ (Table~\ref{tab:validation}). The binomial p-value is $0$ in all cases, but the switching p-value decreases as $M/N$ decreases, i.e.\ the approximation is biased towards smaller p-values (this is because the real $\metric$ is below the switching mean, see Section~\ref{sec:sig}), and the estimates for the languages with the smallest $M/N$ should be read with this in mind.
+
+\begin{table}[H]
+    \centering
+    \begin{tabular}{lrrrrrr}
+        \toprule
+        $M/N$ & 1 (exact) & 0.5 & 0.2 & 0.1 & 0.05 & 0.01 \\
+        \midrule
+        p-value (switching) & 1.00 & 1.00 & 0.99 & 0.96 & 0.86 & 0.81 \\
+        \bottomrule
+    \end{tabular}
+    \caption{Hungarian, $T=100$: estimated p-value under the switching model as a function of the fraction $M/N$ of vertices used to estimate $\metric_{NH}$.}
+    \label{tab:validation}
+\end{table}
+
+\subsection{Parameters and implementation}
+\begin{table}[H]
+    \centering
+    \begin{tabular}{lp{8.5cm}}
+        \toprule
+        Parameter & Value \\
+        \midrule
+        $T$ (number of random graphs) & 100 (50 for Czech) \\
+        $Q$ (switching factor) & $\max(10,\lceil\ln E\rceil)$, between 11 and 15 \\
+        $M/N$ (if approximating) & 1 (exact): Arabic, Basque, Catalan, Chinese, Greek, Hungarian \\
+         & 0.1: English, Italian, Turkish \\
+         & 0.01: Czech \\
+        Significance level $\alpha$ & 0.05 \\
+        Random seed & 1 \\
+        \bottomrule
+    \end{tabular}
+    \caption{Parameters used in the experiments.}
+    \label{tab:params}
+\end{table}
+
+The networks were built in R from the CoNLL-U files. All other computations were implemented in C++17 and compiled with \texttt{-O3} (Apple clang) with OpenMP. The network is stored as an adjacency list in compressed sparse row form (flat arrays), and the geodesic distances from each vertex are obtained with a breadth-first search, which takes $O(N+E)$ time per vertex. The switching model keeps the edges both in a list, for choosing edges at random, and in a hash set, for checking in constant time whether an edge already exists. The random graphs are generated and tested in parallel, and the exact $\metric$ of the real network is computed in parallel over the vertices. Each random graph uses its own random-number stream, seeded from the global seed and the index of the graph, so the results do not depend on the number of threads.
+
+On an 8-core laptop, one language took from about 2 minutes (Hungarian, exact) to about an hour (Turkish, $M/N=10\%$) for all $2T$ random graphs.
+
+\end{spacing}
+\newpage
+
+\end{document}
