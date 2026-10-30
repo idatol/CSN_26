@@ -1,3 +1,16 @@
+# Checks that <k^2> and <d> in data/<language>_dependency_tree_metrics.txt are valid, 
+# Meaning that every tree satisfies (Ferrer-i-Cancho 2013; 2021)
+#   (1)  4 - 6/n <= <k^2> <= n - 1
+#   (2)  (n <k^2> + q)/4 <= (n - 1) <d> <= (3 (n - 1)^2 + 1 - n mod 2)/4
+#
+# q (number of vertices of odd degree) is not stored in the files, so for the
+# lower bound of (2) we use the smallest q compatible with the data: q is even
+# (sum of degrees is 2(n-1)), q >= 2 (a tree has at least 2 leaves) and, since
+# k^2 mod 4 = k mod 2 for every k, q = n <k^2> (mod 4). This gives q_min = 2
+# when n <k^2> mod 4 = 2 and q_min = 4 otherwise. data_preparation.py also
+# checks (2) with the exact q of every tree.
+#
+
 eps <- 1e-9
 languages <- read.table("list.txt", header = TRUE, stringsAsFactors = FALSE)
 
