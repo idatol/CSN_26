@@ -9,5 +9,5 @@ Greek ./data/Greek_dependency_tree_metrics.txt
 Hungarian ./data/Hungarian_dependency_tree_metrics.txt
 Italian ./data/Italian_dependency_tree_metrics.txt
 Turkish ./data/Turkish_dependency_tree_metrics.txt
-German ./data/German_dependency_tree_metrics.txt
+Swedish ./data/Swedish_dependency_tree_metrics.txt
 Norwegian ./data/Norwegian_dependency_tree_metrics.txt
