@@ -1,3 +1,4 @@
+library(dplyr) # for best model table with different amount of params 
 dir.create("results", showWarnings = FALSE)
 languages <- read.table("list.txt", header = TRUE, stringsAsFactors = FALSE)
 
@@ -111,7 +112,8 @@ param_columns <- unlist(lapply(names(formulas), function(m) {
   paste0(m, "_", setdiff(all.vars(formulas[[m]]), c("y", "n")))
 }))
 
-tab_s <- tab_aic <- tab_delta <- tab_w <- tab_params <- data.frame()
+tab_s <- tab_aic <- tab_delta <- tab_w <- tab_params <- tab_best <- data.frame()
+
 all_fits <- list()
 for (i in seq_len(nrow(languages))) {
   language <- languages$language[i]
@@ -130,7 +132,15 @@ for (i in seq_len(nrow(languages))) {
   tab_delta <- rbind(tab_delta, data.frame(Language = language, t(sel$delta), check.names = FALSE))
   tab_w <- rbind(tab_w, data.frame(Language = language, t(sel$weights), check.names = FALSE))
 
+  
+  best_model <- all_models[which.min(sel$aic[all_models])]
+  cf_best <- coef(fits[[best_model]])
+  tab_best <- bind_rows(tab_best,
+                        data.frame(Language = language,
+                                   best_model = best_model,
+                                   t(cf_best), check.names = FALSE))
   params <- setNames(rep(NA_real_, length(param_columns)), param_columns)
+  
   for (model in names(fits)) {
     if (!is.null(fits[[model]])) {
       cf <- coef(fits[[model]])
@@ -144,6 +154,7 @@ for (i in seq_len(nrow(languages))) {
 best <- data.frame(Language = tab_aic$Language,
                    best_model = all_models[apply(tab_aic[, all_models], 1, which.min)])
 
+
 cat("\nTable 2 - Delta AIC\n"); print(tab_delta, digits = 3)
 cat("\nBest model per language\n"); print(best)
 
@@ -152,4 +163,5 @@ write.csv(tab_aic, "results/table2_aic.csv", row.names = FALSE)
 write.csv(tab_delta, "results/table2_delta.csv", row.names = FALSE)
 write.csv(tab_w, "results/table2_weights.csv", row.names = FALSE)
 write.csv(tab_params, "results/table3_params.csv", row.names = FALSE)
+write.csv(tab_best, "results/table_best_models.csv", row.names = FALSE)
 saveRDS(all_fits, "results/fits.rds")
