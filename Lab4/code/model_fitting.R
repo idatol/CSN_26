@@ -1,5 +1,10 @@
 library(dplyr) # for best model table with different amount of params 
 dir.create("results", showWarnings = FALSE)
+
+# for raw data model fitting
+suffix <- "_raw"   # appended to every output file name, so the aggregated results are kept
+out <- function(name, ext = "csv") file.path("results", paste0(name, suffix, ".", ext))
+
 languages <- read.table("list.txt", header = TRUE, stringsAsFactors = FALSE)
 
 null_model <- function(n) (1 - 1/n) * (5 - 6/n)
@@ -119,8 +124,10 @@ for (i in seq_len(nrow(languages))) {
   language <- languages$language[i]
   x <- read.table(languages$file[i], header = FALSE)
   colnames(x) <- c("vertices", "degree_2nd_moment", "mean_length")
-  df <- aggregate(degree_2nd_moment ~ vertices, x, mean)
-  colnames(df) <- c("n", "y")
+  #df <- aggregate(degree_2nd_moment ~ vertices, x, mean)
+  #colnames(df) <- c("n", "y")
+  # raw data: one row per sentence, no averaging over sentences with the same n
+  df <- data.frame(n = x$vertices, y = x$degree_2nd_moment)
 
   cat(language, "\n")
   fits <- fit_language(df)
@@ -158,10 +165,18 @@ best <- data.frame(Language = tab_aic$Language,
 cat("\nTable 2 - Delta AIC\n"); print(tab_delta, digits = 3)
 cat("\nBest model per language\n"); print(best)
 
-write.csv(tab_s, "results/table2_s.csv", row.names = FALSE)
-write.csv(tab_aic, "results/table2_aic.csv", row.names = FALSE)
-write.csv(tab_delta, "results/table2_delta.csv", row.names = FALSE)
-write.csv(tab_w, "results/table2_weights.csv", row.names = FALSE)
-write.csv(tab_params, "results/table3_params.csv", row.names = FALSE)
-write.csv(tab_best, "results/table_best_models.csv", row.names = FALSE)
-saveRDS(all_fits, "results/fits.rds")
+write.csv(tab_s,      out("table2_s"),          row.names = FALSE)
+write.csv(tab_aic,    out("table2_aic"),        row.names = FALSE)
+write.csv(tab_delta,  out("table2_delta"),      row.names = FALSE)
+write.csv(tab_w,      out("table2_weights"),    row.names = FALSE)
+write.csv(tab_params, out("table3_params"),     row.names = FALSE)
+write.csv(tab_best,   out("table_best_models"), row.names = FALSE)
+saveRDS(all_fits,     out("fits", "rds"))
+
+#write.csv(tab_s, "results/table2_s.csv", row.names = FALSE)
+#write.csv(tab_aic, "results/table2_aic.csv", row.names = FALSE)
+#write.csv(tab_delta, "results/table2_delta.csv", row.names = FALSE)
+#write.csv(tab_w, "results/table2_weights.csv", row.names = FALSE)
+#write.csv(tab_params, "results/table3_params.csv", row.names = FALSE)
+#write.csv(tab_best, "results/table_best_models.csv", row.names = FALSE)
+#saveRDS(all_fits, "results/fits.rds")

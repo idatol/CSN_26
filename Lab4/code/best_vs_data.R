@@ -5,6 +5,23 @@ library(ggplot2)
 library(patchwork)
 
 languages <- read.table("list.txt", header = TRUE, stringsAsFactors = FALSE)
+fit_on <- "agg"   # "raw" or "agg": which fitted models to plot
+
+# existing fit files: no suffix = aggregated fit, "_raw" = raw-data fit
+fit_suffix <- c(agg = "", raw = "_raw")[[fit_on]]
+tab <- function(name) file.path("results", paste0(name, fit_suffix, ".csv"))
+
+type_names <- c(linear_agg    = "linear_data-agg",
+                log_agg       = "loglog_data-agg",
+                linear_raw    = "linear_data-raw",
+                log_raw       = "loglog_data-raw",
+                log_agg_null  = "loglog_data-agg_null",
+                log_raw_null  = "loglog_data-raw_null",
+                log_agg_all   = "loglog_data-agg_allmodels",
+                log_raw_all   = "loglog_data-raw_allmodels")
+
+fig <- function(prefix, type)
+  file.path("results", paste0(prefix, "_fit-", fit_on, "_", type_names[[type]], ".pdf"))
 
 null_model <- function(n) (1 - 1/n) * (5 - 6/n)
 
@@ -19,10 +36,8 @@ formulas <- list(
   "4+" = y ~ a * log(n) + d
 )
 
-plot_best_model <- function(language,
-                            formulas,
-                            languages,
-                            best_file = "results/table_best_models.csv") {
+plot_best_model <- function(language, formulas, languages,
+                            best_file = tab("table_best_models")) {
   
   best <- read.csv(best_file, colClasses = c(Language = "character",
                                              best_model = "character"),
@@ -83,10 +98,11 @@ plot_best_model <- function(language,
        log_raw_null = make_base(x_raw, 0.2, TRUE) + log_scales)
 }
 
-
-best  <- read.csv("results/table_best_models.csv",
+best  <- read.csv(tab("table_best_models"),
                   colClasses = c(Language = "character", best_model = "character"),
                   check.names = FALSE)
+
+
 plots <- setNames(lapply(best$Language, plot_best_model,
                          formulas = formulas, languages = languages),
                   best$Language)
@@ -115,7 +131,9 @@ save_grid <- function(plots, type, file, ncol = 3,
   grid <- guide_area() / inner +
     plot_layout(guides = "collect",
                 heights = c(0.4, cell_height * nrow_grid)) +
-    plot_annotation(title = page_titles[[type]],
+    plot_annotation(title = paste0(page_titles[[type]],
+                                   " (models fitted to ",
+                                   if (fit_on == "raw") "raw" else "aggregated", " data)"),
                     theme = theme(plot.title = element_text(size = page_title_size,
                                                             face = "bold",
                                                             hjust = 0.5)))
@@ -126,16 +144,15 @@ save_grid <- function(plots, type, file, ncol = 3,
          limitsize = FALSE)
 }
 
+
+
 for (type in names(page_titles)) {
-  save_grid(plots, type, file.path("results", paste0("best_models_", type, ".pdf")))
+  save_grid(plots, type, fig("best_models", type))
 }
 
+plot_all_models <- function(language, formulas, languages,
+                            params_file = tab("table3_params")) {
 
-plot_all_models <- function(language,
-                            formulas,
-                            languages,
-                            params_file = "results/table3_params.csv") {
-  
   params <- read.csv(params_file, colClasses = c(Language = "character"),
                      check.names = FALSE)
   row <- params[params$Language == language, ]
@@ -208,6 +225,8 @@ page_titles <- c(page_titles,
                  log_agg_all = "Aggregated data, log-log scale, all models",
                  log_raw_all = "Raw data, log-log scale, all models")
 
+
 for (type in c("log_agg_all", "log_raw_all")) {
-  save_grid(plots, type, file.path("results", paste0("all_models_", type, ".pdf")))
+  save_grid(plots, type, fig("all_models", type))
 }
+
