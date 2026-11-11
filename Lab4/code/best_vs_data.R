@@ -1,13 +1,10 @@
-setwd("C:/Users/ebbat/OneDrive/Dokument/Chalmers/CSN/04Lab/CSN_26/Lab4")
-getwd()                    
-
 library(ggplot2) 
 library(patchwork)
 
 languages <- read.table("list.txt", header = TRUE, stringsAsFactors = FALSE)
 fit_on <- "agg"   # "raw" or "agg": which fitted models to plot
 
-# existing fit files: no suffix = aggregated fit, "_raw" = raw-data fit
+
 fit_suffix <- c(agg = "", raw = "_raw")[[fit_on]]
 tab <- function(name) file.path("results", paste0(name, fit_suffix, ".csv"))
 
@@ -60,7 +57,7 @@ plot_best_model <- function(language, formulas, languages,
   n_grid <- exp(seq(log(min(x_raw$vertices)), log(max(x_raw$vertices)), length.out = 500))
   rhs <- formulas[[model]][[3]]
   
-  # constant labels, so that all plots share exactly the same legend
+
   lab_model <- "best model"
   lab_null  <- "null model"
   
@@ -126,7 +123,7 @@ save_grid <- function(plots, type, file, ncol = 3,
     theme(plot.title = element_text(size = title_size, face = "bold"),
           legend.position = "top",
           legend.text = element_text(size = legend_size),
-          legend.key.width = unit(1.5, "cm"))   # longer line samples, easier to tell linetypes apart
+          legend.key.width = unit(1.5, "cm"))   
   
   grid <- guide_area() / inner +
     plot_layout(guides = "collect",
@@ -143,7 +140,6 @@ save_grid <- function(plots, type, file, ncol = 3,
          height = cell_height * nrow_grid + 1,
          limitsize = FALSE)
 }
-
 
 
 for (type in names(page_titles)) {
@@ -182,16 +178,16 @@ plot_all_models <- function(language, formulas, languages,
     data.frame(vertices = n_grid, degree_2nd_moment = y, model = model)
   })
   
-  # null model as one more curve in the same data frame
+
   null_curve <- data.frame(vertices = n_grid,
                            degree_2nd_moment = null_model(n_grid),
                            model = "null")
   
   curves <- do.call(rbind, c(curves, list(null_curve)))
-  # also drops null_model(1) = 0, which cannot be shown on a log axis
+
   curves <- curves[is.finite(curves$degree_2nd_moment) & curves$degree_2nd_moment > 0, ]
   
-  # fixed levels and styles so that every language gets the identical legend
+
   all_models <- c(names(formulas), "null")
   cols <- c(setNames(scales::hue_pal()(length(formulas)), names(formulas)),
             null = "black")
@@ -215,7 +211,7 @@ plot_all_models <- function(language, formulas, languages,
        log_raw_all = make_plot(x_raw))
 }
   
-# add the all-models plots to the existing list, one entry per language
+
 for (lang in names(plots)) {
   plots[[lang]] <- c(plots[[lang]],
                      plot_all_models(lang, formulas, languages))

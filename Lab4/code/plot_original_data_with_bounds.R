@@ -1,15 +1,15 @@
 library(ggplot2)
 library(patchwork)
-library(ggrastr)   # rasterised points keep the PDF small
+library(ggrastr)   
 
 dir.create("results", showWarnings = FALSE)
 languages <- read.table("list.txt", header = TRUE, stringsAsFactors = FALSE)
 
-# bounds on <k^2> for a tree with n vertices
-lower_bound <- function(n) 4 - 6/n   # minimum (path graph)
-upper_bound <- function(n) n - 1     # maximum (star graph)
 
-# constant labels, so that all panels share exactly the same legend
+lower_bound <- function(n) 4 - 6/n   
+upper_bound <- function(n) n - 1     
+
+
 lab_raw   <- "raw data"
 lab_agg   <- "mean per n"
 lab_lower <- "minimum (path graph)"
@@ -24,7 +24,6 @@ plot_bounds <- function(language, languages) {
   colnames(x) <- c("vertices", "degree_2nd_moment", "mean_length")
   x <- x[order(x$vertices), ]
   
-  # aggregated data: mean of <k^2> over sentences with the same number of vertices
   x_agg <- aggregate(degree_2nd_moment ~ vertices, x, mean)
   
   x$series     <- lab_raw
@@ -35,7 +34,6 @@ plot_bounds <- function(language, languages) {
     data.frame(vertices = n_grid, degree_2nd_moment = lower_bound(n_grid), series = lab_lower),
     data.frame(vertices = n_grid, degree_2nd_moment = upper_bound(n_grid), series = lab_upper)
   )
-  # values <= 0 cannot be shown on a log axis, so they are only dropped for the log plot
   curves_log <- curves[curves$degree_2nd_moment > 0, ]
   
   make_plot <- function(curve_data, ylim) {
@@ -51,7 +49,7 @@ plot_bounds <- function(language, languages) {
                             limits = all_labs, name = NULL) +
       guides(colour = guide_legend(override.aes = list(shape = c(16, 16, NA, NA),
                                                        alpha = 1, size = 2))) +
-      coord_cartesian(ylim = ylim) +   # zoom on the data, the upper bound is clipped
+      coord_cartesian(ylim = ylim) +   
       labs(x = "vertices", y = "degree 2nd moment", title = language)
   }
   y <- x$degree_2nd_moment
