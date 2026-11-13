@@ -1,8 +1,8 @@
-library(dplyr) # for best model table with different amount of params 
+library(dplyr) 
 dir.create("results", showWarnings = FALSE)
 
-# for raw data model fitting
-suffix <- "_raw"   # appended to every output file name, so the aggregated results are kept
+
+suffix <- "_raw"   
 out <- function(name, ext = "csv") file.path("results", paste0(name, suffix, ".", ext))
 
 languages <- read.table("list.txt", header = TRUE, stringsAsFactors = FALSE)
@@ -25,14 +25,14 @@ all_models <- c("0", names(formulas))
 fit_language <- function(df) {
   n <- df$n
   y <- df$y
-  cmax <- 700 / max(n)  # keeps exp(c n) finite (doubles overflow at ~e^709)
+  cmax <- 700 / max(n)  
 
-  # starting values from linear regressions on transformed data
-  b1 <- unname(coef(lm(log(y) ~ 0 + I(log(n/2))))[1])  # log y = b log(n/2)
-  pow <- unname(coef(lm(log(y) ~ log(n))))             # log y = log a + b log n
-  ex <- unname(coef(lm(log(y) ~ n)))                   # log y = log a + c n
-  a4 <- unname(coef(lm(y ~ 0 + log(n)))[1])            # y = a log n
-  lg <- unname(coef(lm(y ~ log(n))))                   # y = d + a log n
+  # starting values 
+  b1 <- unname(coef(lm(log(y) ~ 0 + I(log(n/2))))[1])  
+  pow <- unname(coef(lm(log(y) ~ log(n))))             
+  ex <- unname(coef(lm(log(y) ~ n)))                   
+  a4 <- unname(coef(lm(y ~ 0 + log(n)))[1])            
+  lg <- unname(coef(lm(y ~ log(n))))                   
   c3 <- min(max(ex[2], -cmax), cmax)
 
   d0 <- max(y) + 0.1
@@ -112,7 +112,7 @@ model_selection <- function(df, fits) {
   list(s = s, aic = aic, delta = delta, weights = weights)
 }
 
-# Table 3 columns: "<model>_<parameter>", e.g. 2+_d
+
 param_columns <- unlist(lapply(names(formulas), function(m) {
   paste0(m, "_", setdiff(all.vars(formulas[[m]]), c("y", "n")))
 }))
@@ -126,7 +126,6 @@ for (i in seq_len(nrow(languages))) {
   colnames(x) <- c("vertices", "degree_2nd_moment", "mean_length")
   #df <- aggregate(degree_2nd_moment ~ vertices, x, mean)
   #colnames(df) <- c("n", "y")
-  # raw data: one row per sentence, no averaging over sentences with the same n
   df <- data.frame(n = x$vertices, y = x$degree_2nd_moment)
 
   cat(language, "\n")
@@ -157,7 +156,7 @@ for (i in seq_len(nrow(languages))) {
   tab_params <- rbind(tab_params, data.frame(Language = language, t(params), check.names = FALSE))
 }
 
-# best model of every language = lowest AIC
+
 best <- data.frame(Language = tab_aic$Language,
                    best_model = all_models[apply(tab_aic[, all_models], 1, which.min)])
 

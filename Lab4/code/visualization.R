@@ -125,7 +125,7 @@ specs <- list(
                     start = c(a = a_log_d, d = d_log_d), base = "model 4")
 )
 
-# Helper: bounds vector in the order of 'params', defaulting to +-Inf
+
 bounds <- function(v, params, default) {
   out <- setNames(rep(default, length(params)), params)
   out[names(v)] <- v
@@ -137,13 +137,13 @@ fits <- list()
 for (nm in names(specs)) {
   s <- specs[[nm]]
   
-  # start from the base model's solution (with d = 0) if it fitted successfully
+ 
   start <- s$start
   if (!is.null(s$base) && !is.null(fits[[s$base]])) {
     start <- c(coef(fits[[s$base]]), d = 0)[s$params]
   }
   
-  # build the formula
+ 
   rhs <- paste0(s$params, " = ", s$params, collapse = ", ")
   fml <- as.formula(sprintf('y ~ models("%s", n, %s)', nm, rhs))
   
