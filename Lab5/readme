@@ -1,1 +1,11 @@
 https://snap.stanford.edu/data/
+
+## Task4
+
+Task 4 can be run liek this:
+
+```bash
+Rscript code/Task4_evaluate.R
+```
+
+The result are generated in the `./results` directory.
