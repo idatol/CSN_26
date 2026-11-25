@@ -245,7 +245,10 @@ evaluate_network <- function(name, g, gt = NULL) {
   write.csv(round(local_J, 5), file.path(OUT_DIR, paste0(name, "_local_jaccard.csv")))
 
   # Plot: reference vs. the best algorithm that is not the reference itself
-  best <- setdiff(rownames(ranks), ref_name)[1]
+  # (in RFID, fast greedy finds exactly the reference clustering, so skip
+  # algorithms whose clustering is identical to the reference)
+  differs <- rownames(ranks)[colMeans(global_J)[rownames(ranks)] < 1 - 1e-9]
+  best <- setdiff(differs, ref_name)[1]
   plot_two(g, ref, medoids[[best]],
            paste0(name, ": reference (", ref_name, ")"),
            paste0(name, ": ", best, sprintf(" (global Jaccard %.2f)",
