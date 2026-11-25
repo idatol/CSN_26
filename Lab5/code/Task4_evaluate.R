@@ -253,7 +253,7 @@ evaluate_network <- function(name, g, gt = NULL) {
            file.path(OUT_DIR, paste0(name, "_communities.png")))
 
   invisible(list(summary = summary_tab, ranks = ranks, local = local_J,
-                 scores = mean_scores, reference = ref_name))
+                 scores = mean_scores, reference = ref_name, medoids = medoids))
 }
 
 
@@ -272,6 +272,9 @@ print(round(overview, 3))
 cat("\nReference used:", paste(names(results), sapply(results, `[[`, "reference"),
                                 sep = " = ", collapse = ", "), "\n")
 write.csv(round(overview, 5), file.path(OUT_DIR, "overview_global_jaccard.csv"))
+
+# Save the synthetic clusterings, they are reused in Task3_directions.R
+saveRDS(list(gt = networks$synthetic$gt, medoids = results$synthetic$medoids), file.path(OUT_DIR, "synthetic_clusterings.rds"))
 
 sink()
 close(log_file)
